@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InferShrink — LLM Cost Optimization SDK</title>
+    <meta name="description" content="Cut your LLM costs 80%+ with one line of code. Smart model routing for OpenAI and Anthropic. Zero dependencies.">
+    <meta property="og:title" content="InferShrink — Cut LLM Costs 80%+">
+    <meta property="og:description" content="One-line SDK that routes simple LLM tasks to cheaper models automatically. OpenAI + Anthropic. 452 tests.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://musashimiyamoto1-cloud.github.io/infershrink-site/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="InferShrink — Cut LLM Costs 80%+">
+    <meta name="twitter:description" content="One-line SDK that routes simple LLM tasks to cheaper models automatically.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -447,7 +455,7 @@ client = optimize(anthropic.Anthropic())
 
 <span class="c"># claude-opus → claude-sonnet for simple tasks</span>
 response = client.messages.create(
-    model=<span class="s">"claude-3-opus-20240229"</span>,
+    model=<span class="s">"claude-opus-4-6"</span>,
     max_tokens=<span class="n">1024</span>,
     messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Hello world"</span>}]
 )</code></pre>
