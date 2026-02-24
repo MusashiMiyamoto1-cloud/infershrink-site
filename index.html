@@ -6,7 +6,7 @@
     <title>InferShrink — LLM Cost Optimization SDK</title>
     <meta name="description" content="Cut your LLM costs 80%+ with one line of code. Smart model routing for OpenAI and Anthropic. Zero dependencies.">
     <meta property="og:title" content="InferShrink — Cut LLM Costs 80%+">
-    <meta property="og:description" content="One-line SDK that routes simple LLM tasks to cheaper models automatically. OpenAI + Anthropic. 452 tests.">
+    <meta property="og:description" content="One-line SDK that routes simple LLM tasks to cheaper models automatically. OpenAI + Anthropic + Google. 511 tests.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://musashimiyamoto1-cloud.github.io/infershrink-site/">
     <meta name="twitter:card" content="summary">
@@ -499,6 +499,7 @@
                     <div class="code-tabs">
                         <div class="code-tab active" onclick="showTab('openai')">OpenAI</div>
                         <div class="code-tab" onclick="showTab('anthropic')">Anthropic</div>
+                        <div class="code-tab" onclick="showTab('google')">Google</div>
                     </div>
                 </div>
                 
@@ -530,6 +531,23 @@ response = client.messages.create(
     messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Hello world"</span>}]
 )</code></pre>
                 </div>
+
+                <div id="google-code" class="code-content">
+                    <pre><code><span class="k">from</span> openai <span class="k">import</span> OpenAI
+<span class="k">from</span> infershrink <span class="k">import</span> optimize
+
+<span class="c"># Gemini via OpenAI-compatible endpoint</span>
+client = optimize(OpenAI(
+    api_key=<span class="s">"your-gemini-key"</span>,
+    base_url=<span class="s">"https://generativelanguage.googleapis.com/v1beta/openai/"</span>,
+))
+
+response = client.chat.completions.create(
+    model=<span class="s">"gemini-2.5-pro"</span>,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"What is 2+2?"</span>}],
+)
+<span class="c"># Simple → routed to gemini-2.5-flash (free tier)</span></code></pre>
+                </div>
             </div>
         </section>
 
@@ -553,7 +571,7 @@ response = client.messages.create(
                 </div>
                 <div class="feature-item">
                     <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>OpenAI + Anthropic</span>
+                    <span>OpenAI + Anthropic + Google</span>
                 </div>
                 <div class="feature-item">
                     <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -561,7 +579,7 @@ response = client.messages.create(
                 </div>
                 <div class="feature-item">
                     <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>452 tests, CI/CD</span>
+                    <span>511 tests, CI/CD</span>
                 </div>
             </div>
         </section>
