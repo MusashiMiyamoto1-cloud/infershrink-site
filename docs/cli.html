@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InferShrink Documentation - CLI Reference</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #e5e5e5;
+            --text-muted: #a3a3a3;
+            --accent-blue: #3b82f6;
+            --accent-blue-hover: #2563eb;
+            --accent-green: #22c55e;
+            --border-color: #262626;
+            --card-bg: #111111;
+            --code-bg: #171717;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; transition: color 0.2s; }
+        a:hover { color: var(--accent-blue); }
+
+        /* Navigation */
+        .top-nav { height: 60px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 24px; background: rgba(10,10,10,0.9); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 50; justify-content: space-between; }
+        .logo { font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; color: var(--text-color); }
+        .top-links { display: flex; gap: 24px; font-size: 0.9rem; align-items: center; }
+        .nav-active { color: var(--accent-blue); }
+
+        /* Layout */
+        .docs-container { display: flex; max-width: 1400px; margin: 0 auto; min-height: calc(100vh - 60px); }
+        .sidebar { width: 260px; padding: 32px 24px; border-right: 1px solid var(--border-color); position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; flex-shrink: 0; background: var(--bg-color); }
+        .main-content { flex: 1; padding: 48px 64px; max-width: 900px; }
+
+        /* Sidebar Links */
+        .nav-group { margin-bottom: 24px; }
+        .nav-header { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
+        .nav-link { display: block; padding: 6px 0; color: var(--text-muted); font-size: 0.95rem; }
+        .nav-link:hover { color: var(--text-color); }
+        .nav-link.active { color: var(--accent-blue); font-weight: 500; }
+
+        /* Content Styling */
+        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.02em; }
+        h2 { font-size: 1.75rem; font-weight: 600; margin-top: 48px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        h3 { font-size: 1.25rem; font-weight: 600; margin-top: 32px; margin-bottom: 16px; }
+        p { margin-bottom: 16px; color: var(--text-muted); font-size: 1.05rem; }
+        ul, ol { margin-bottom: 24px; padding-left: 24px; color: var(--text-muted); }
+        li { margin-bottom: 8px; }
+        code { font-family: var(--font-mono); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: var(--text-color); }
+        
+        pre { background: var(--code-bg); padding: 20px; border-radius: 8px; overflow-x: auto; margin-bottom: 24px; border: 1px solid var(--border-color); }
+        pre code { background: none; padding: 0; color: #d4d4d4; font-size: 0.9rem; }
+        
+        /* Command */
+        .cli-block { margin-bottom: 40px; }
+        .cli-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .cli-tag { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; font-family: var(--font-mono); }
+
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-color); cursor: pointer; padding: 8px; }
+
+        @media (max-width: 800px) {
+            .docs-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border-color); display: none; }
+            .sidebar.open { display: block; }
+            .main-content { padding: 32px 20px; }
+            .mobile-menu-btn { display: block; }
+            .top-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="../index.html" class="logo">InferShrink</a>
+        <div class="top-links">
+            <a href="index.html" class="nav-active">Docs</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="https://pypi.org/project/infershrink/" target="_blank">PyPI ↗</a>
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+    </nav>
+
+    <div class="docs-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="nav-group">
+                <div class="nav-header">Guide</div>
+                <a href="index.html" class="nav-link">Quick Start</a>
+                <a href="configuration.html" class="nav-link">Configuration</a>
+                <a href="providers.html" class="nav-link">Providers</a>
+                <a href="cli.html" class="nav-link active">CLI Reference</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1>CLI Reference</h1>
+            <p>InferShrink includes a command-line interface for testing routing logic, managing indexes, and viewing statistics.</p>
+
+            <div class="cli-block">
+                <h3>classify</h3>
+                <p>Analyze the complexity of a prompt without running it.</p>
+                <pre><code>$ infershrink classify "What is 2+2?"
+Complexity: SIMPLE (score: 0.12)
+Reasoning: Short length, no code blocks, basic arithmetic pattern.</code></pre>
+                <pre><code>$ infershrink classify "Implement a red-black tree with delete rebalancing"
+Complexity: COMPLEX (score: 0.89)
+Reasoning: Algorithmic request, requires structural code generation.</code></pre>
+            </div>
+
+            <div class="cli-block">
+                <h3>route</h3>
+                <p>Simulate how a prompt would be routed given a specific model.</p>
+                <pre><code>$ infershrink route "Hello world" --model gpt-4o
+Original: gpt-4o
+Routed:   gpt-4o-mini
+Action:   Downgraded (saved ~95%)</code></pre>
+                <pre><code>$ infershrink route "Design a distributed consensus algorithm" --model gpt-4o
+Original: gpt-4o
+Routed:   gpt-4o
+Action:   No change (task too complex)</code></pre>
+            </div>
+
+            <div class="cli-block">
+                <h3>stats</h3>
+                <p>View global usage statistics and accumulated savings.</p>
+                <pre><code>$ infershrink stats
+Total Requests: 1,402
+Routed Down:    982 (70.0%)
+Original Cost:  $45.20
+Actual Cost:    $12.40
+Total Saved:    $32.80 (72.5%)</code></pre>
+            </div>
+
+            <div class="cli-block">
+                <h3>index</h3>
+                <p>Create a semantic index from a directory of documents.</p>
+                <pre><code>$ infershrink index ./docs
+Indexing 12 files...
+Created index at .infershrink/index.faiss (Size: 4.2MB)</code></pre>
+            </div>
+            
+            <div class="cli-block">
+                <h3>clear</h3>
+                <p>Reset local stats and cache.</p>
+                <pre><code>$ infershrink clear
+Stats cleared.</code></pre>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

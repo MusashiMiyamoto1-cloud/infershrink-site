@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InferShrink - Pricing & Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #e5e5e5;
+            --text-muted: #a3a3a3;
+            --accent-blue: #3b82f6;
+            --accent-blue-hover: #2563eb;
+            --accent-green: #22c55e;
+            --border-color: #262626;
+            --card-bg: #111111;
+            --code-bg: #171717;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; transition: color 0.2s; }
+        a:hover { color: var(--accent-blue); }
+
+        /* Navigation */
+        .top-nav { height: 60px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 24px; background: rgba(10,10,10,0.9); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 50; justify-content: space-between; }
+        .logo { font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; color: var(--text-color); }
+        .top-links { display: flex; gap: 24px; font-size: 0.9rem; align-items: center; }
+        .nav-active { color: var(--accent-blue); }
+
+        /* Layout */
+        .docs-container { display: flex; max-width: 1400px; margin: 0 auto; min-height: calc(100vh - 60px); }
+        .sidebar { width: 260px; padding: 32px 24px; border-right: 1px solid var(--border-color); position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; flex-shrink: 0; background: var(--bg-color); }
+        .main-content { flex: 1; padding: 48px 64px; max-width: 900px; }
+
+        /* Sidebar Links */
+        .nav-group { margin-bottom: 24px; }
+        .nav-header { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
+        .nav-link { display: block; padding: 6px 0; color: var(--text-muted); font-size: 0.95rem; }
+        .nav-link:hover { color: var(--text-color); }
+        .nav-link.active { color: var(--accent-blue); font-weight: 500; }
+
+        /* Content Styling */
+        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.02em; }
+        h2 { font-size: 1.75rem; font-weight: 600; margin-top: 48px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        p { margin-bottom: 16px; color: var(--text-muted); font-size: 1.05rem; }
+
+        /* Calculator */
+        .calc-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 32px; margin: 40px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .calc-inputs { display: flex; flex-direction: column; gap: 20px; }
+        .calc-results { display: flex; flex-direction: column; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 24px; border: 1px solid var(--border-color); }
+
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+        .input-group input, .input-group select { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-color); padding: 10px; border-radius: 6px; font-family: var(--font-sans); font-size: 1rem; }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: var(--accent-blue); }
+
+        .result-row { display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
+        .result-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .result-label { color: var(--text-muted); }
+        .result-value { font-weight: 600; font-family: var(--font-mono); }
+        .savings-value { color: var(--accent-green); font-size: 1.5rem; font-weight: 700; }
+
+        /* Pricing Table */
+        .pricing-table { width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .pricing-table th, .pricing-table td { padding: 16px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .pricing-table th { text-align: left; font-weight: 500; color: var(--text-muted); background: var(--card-bg); }
+        .pricing-header-row th { color: var(--text-color); font-size: 1.1rem; }
+        .pricing-header-row th span { display: block; font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; font-weight: 400; }
+
+        /* Comparison Table */
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 40px; }
+        .comparison-table th, .comparison-table td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border-color); color: var(--text-muted); }
+        .comparison-table th { text-align: left; color: var(--text-color); }
+        .comparison-table td:first-child { text-align: left; color: var(--text-color); font-weight: 500; }
+        .check { color: var(--accent-green); }
+        .cross { color: #ef4444; }
+
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-color); cursor: pointer; padding: 8px; }
+
+        @media (max-width: 800px) {
+            .docs-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border-color); display: none; }
+            .sidebar.open { display: block; }
+            .main-content { padding: 32px 20px; }
+            .calc-container { grid-template-columns: 1fr; }
+            .mobile-menu-btn { display: block; }
+            .top-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="../index.html" class="logo">InferShrink</a>
+        <div class="top-links">
+            <a href="index.html" class="nav-active">Docs</a>
+            <a href="pricing.html" class="nav-active">Pricing</a>
+            <a href="https://pypi.org/project/infershrink/" target="_blank">PyPI ↗</a>
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+    </nav>
+
+    <div class="docs-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="nav-group">
+                <div class="nav-header">Guide</div>
+                <a href="index.html" class="nav-link">Quick Start</a>
+                <a href="configuration.html" class="nav-link">Configuration</a>
+                <a href="providers.html" class="nav-link">Providers</a>
+                <a href="cli.html" class="nav-link">CLI Reference</a>
+                <a href="pricing.html" class="nav-link active">Pricing</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1>Pricing & Savings</h1>
+            <p>InferShrink is free to start. Our paid plans are for high-volume users who need advanced features like custom routing logic and team management.</p>
+
+            <table class="pricing-table">
+                <thead>
+                    <tr class="pricing-header-row">
+                        <th></th>
+                        <th>Dev <span>No Key</span></th>
+                        <th>Free <span>Starter</span></th>
+                        <th>Pro <span>$19/mo</span></th>
+                        <th>Team <span>$49/mo</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Requests/mo</th>
+                        <td>Unlimited</td>
+                        <td>1,000</td>
+                        <td>50,000</td>
+                        <td>500,000</td>
+                    </tr>
+                    <tr>
+                        <th>Model routing</th>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <th>Compression</th>
+                        <td>✅</td>
+                        <td>—</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <th>Retrieval</th>
+                        <td>✅</td>
+                        <td>—</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Savings Calculator</h2>
+            <p>Estimate how much you can save by automatically routing simple tasks to cheaper models.</p>
+            
+            <div class="calc-container">
+                <div class="calc-inputs">
+                    <div class="input-group">
+                        <label>Monthly API Calls</label>
+                        <input type="number" id="calls" value="10000" min="0" step="1000">
+                    </div>
+                    <div class="input-group">
+                        <label>Avg Tokens / Call</label>
+                        <input type="number" id="tokens" value="1000" min="0" step="100">
+                    </div>
+                    <div class="input-group">
+                        <label>Current Model</label>
+                        <select id="model">
+                            <option value="gpt-4o">GPT-4o</option>
+                            <option value="claude-opus">Claude 3 Opus</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Simplicity Rate (default 70%)</label>
+                        <input type="range" id="simple-rate" min="0" max="100" value="70">
+                        <div style="font-size:0.8rem; text-align:right; color:var(--text-muted);" id="rate-display">70% of tasks are simple</div>
+                    </div>
+                </div>
+                <div class="calc-results">
+                    <div class="result-row">
+                        <span class="result-label">Current Cost</span>
+                        <span class="result-value" id="current-cost">$0.00</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">With InferShrink</span>
+                        <span class="result-value" id="new-cost">$0.00</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Monthly Savings</span>
+                        <span class="result-value savings-value" id="monthly-savings">$0.00</span>
+                    </div>
+                    <div class="result-row" style="border:none; padding-top:10px;">
+                        <span class="result-label">Yearly Savings</span>
+                        <span class="result-value" style="color:var(--text-color);" id="yearly-savings">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Feature Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>InferShrink</th>
+                        <th>RouteLLM</th>
+                        <th>Burnwise</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>One-line integration</td><td class="check">✅</td><td class="cross">❌</td><td class="cross">❌</td></tr>
+                    <tr><td>Semantic retrieval</td><td class="check">✅</td><td class="cross">❌</td><td class="cross">❌</td></tr>
+                    <tr><td>Prompt compression</td><td class="check">✅</td><td class="cross">❌</td><td class="cross">❌</td></tr>
+                    <tr><td>Model routing</td><td class="check">✅</td><td class="check">✅</td><td class="check">✅</td></tr>
+                    <tr><td>Cost tracking</td><td class="check">✅</td><td class="cross">❌</td><td class="check">✅</td></tr>
+                    <tr><td>Security-aware</td><td class="check">✅</td><td class="cross">❌</td><td class="cross">❌</td></tr>
+                    <tr><td>Zero dependencies</td><td class="check">✅</td><td class="cross">❌</td><td class="cross">❌</td></tr>
+                </tbody>
+            </table>
+
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Calculator Logic
+        const inputs = ['calls', 'tokens', 'model', 'simple-rate'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculate);
+        });
+
+        const PRICES = {
+            'gpt-4o': { in: 2.50, out: 10.00, cheapIn: 0.15, cheapOut: 0.60 }, // Routes to gpt-4o-mini
+            'claude-opus': { in: 15.00, out: 75.00, cheapIn: 3.00, cheapOut: 15.00 } // Routes to claude-sonnet
+        };
+
+        function calculate() {
+            const calls = parseFloat(document.getElementById('calls').value) || 0;
+            const tokens = parseFloat(document.getElementById('tokens').value) || 0;
+            const modelKey = document.getElementById('model').value;
+            const simpleRate = parseFloat(document.getElementById('simple-rate').value) / 100;
+
+            document.getElementById('rate-display').innerText = Math.round(simpleRate * 100) + '% of tasks are simple';
+
+            const prices = PRICES[modelKey];
+            
+            // Assume 75% input, 25% output split
+            const totalTokens = calls * tokens;
+            const inputTokens = totalTokens * 0.75;
+            const outputTokens = totalTokens * 0.25;
+
+            // Calculate Current Cost (1M token basis)
+            const currentCost = (inputTokens * prices.in / 1000000) + (outputTokens * prices.out / 1000000);
+
+            // Calculate New Cost
+            // Simple portion (routed to cheap)
+            const simpleInCost = (inputTokens * simpleRate * prices.cheapIn) / 1000000;
+            const simpleOutCost = (outputTokens * simpleRate * prices.cheapOut) / 1000000;
+            
+            // Complex portion (stays on expensive)
+            const complexInCost = (inputTokens * (1 - simpleRate) * prices.in) / 1000000;
+            const complexOutCost = (outputTokens * (1 - simpleRate) * prices.out) / 1000000;
+
+            const newCost = simpleInCost + simpleOutCost + complexInCost + complexOutCost;
+            const savings = currentCost - newCost;
+
+            // Format Currency
+            const fmt = (num) => '$' + num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            document.getElementById('current-cost').innerText = fmt(currentCost);
+            document.getElementById('new-cost').innerText = fmt(newCost);
+            document.getElementById('monthly-savings').innerText = fmt(savings);
+            document.getElementById('yearly-savings').innerText = fmt(savings * 12);
+        }
+
+        // Init
+        calculate();
+    </script>
+</body>
+</html>

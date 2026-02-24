@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InferShrink Documentation - Configuration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #e5e5e5;
+            --text-muted: #a3a3a3;
+            --accent-blue: #3b82f6;
+            --accent-blue-hover: #2563eb;
+            --accent-green: #22c55e;
+            --border-color: #262626;
+            --card-bg: #111111;
+            --code-bg: #171717;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; transition: color 0.2s; }
+        a:hover { color: var(--accent-blue); }
+
+        /* Navigation */
+        .top-nav { height: 60px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 24px; background: rgba(10,10,10,0.9); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 50; justify-content: space-between; }
+        .logo { font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; color: var(--text-color); }
+        .top-links { display: flex; gap: 24px; font-size: 0.9rem; align-items: center; }
+        .nav-active { color: var(--accent-blue); }
+
+        /* Layout */
+        .docs-container { display: flex; max-width: 1400px; margin: 0 auto; min-height: calc(100vh - 60px); }
+        .sidebar { width: 260px; padding: 32px 24px; border-right: 1px solid var(--border-color); position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; flex-shrink: 0; background: var(--bg-color); }
+        .main-content { flex: 1; padding: 48px 64px; max-width: 900px; }
+
+        /* Sidebar Links */
+        .nav-group { margin-bottom: 24px; }
+        .nav-header { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
+        .nav-link { display: block; padding: 6px 0; color: var(--text-muted); font-size: 0.95rem; }
+        .nav-link:hover { color: var(--text-color); }
+        .nav-link.active { color: var(--accent-blue); font-weight: 500; }
+
+        /* Content Styling */
+        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.02em; }
+        h2 { font-size: 1.75rem; font-weight: 600; margin-top: 48px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        h3 { font-size: 1.25rem; font-weight: 600; margin-top: 32px; margin-bottom: 16px; }
+        p { margin-bottom: 16px; color: var(--text-muted); font-size: 1.05rem; }
+        ul, ol { margin-bottom: 24px; padding-left: 24px; color: var(--text-muted); }
+        li { margin-bottom: 8px; }
+        code { font-family: var(--font-mono); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: var(--text-color); }
+        
+        pre { background: var(--code-bg); padding: 20px; border-radius: 8px; overflow-x: auto; margin-bottom: 24px; border: 1px solid var(--border-color); }
+        pre code { background: none; padding: 0; color: #d4d4d4; font-size: 0.9rem; }
+        
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 32px; font-size: 0.95rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-muted); }
+        th { background: var(--card-bg); font-weight: 600; color: var(--text-color); }
+        tr:last-child td { border-bottom: none; }
+        
+        /* Syntax Highlighting */
+        .k { color: #569cd6; } /* keyword */
+        .s { color: #ce9178; } /* string */
+        .c { color: #6a9955; } /* comment */
+        .f { color: #dcdcaa; } /* function */
+        .n { color: #b5cea8; } /* number */
+        .v { color: #9cdcfe; } /* variable */
+
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-color); cursor: pointer; padding: 8px; }
+
+        @media (max-width: 800px) {
+            .docs-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border-color); display: none; }
+            .sidebar.open { display: block; }
+            .main-content { padding: 32px 20px; }
+            .mobile-menu-btn { display: block; }
+            .top-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="../index.html" class="logo">InferShrink</a>
+        <div class="top-links">
+            <a href="index.html" class="nav-active">Docs</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="https://pypi.org/project/infershrink/" target="_blank">PyPI ↗</a>
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+    </nav>
+
+    <div class="docs-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="nav-group">
+                <div class="nav-header">Guide</div>
+                <a href="index.html" class="nav-link">Quick Start</a>
+                <a href="configuration.html" class="nav-link active">Configuration</a>
+                <a href="providers.html" class="nav-link">Providers</a>
+                <a href="cli.html" class="nav-link">CLI Reference</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1>Configuration</h1>
+            <p>InferShrink comes with sensible defaults, but every aspect of the routing and optimization engine can be customized.</p>
+
+            <h2>Overrides</h2>
+            <p>You can pass a configuration dictionary directly to the <code>optimize()</code> function.</p>
+            <pre><code>client = optimize(openai.Client(), config={
+    <span class="s">"tiers"</span>: {
+        <span class="s">"tier1"</span>: {<span class="s">"models"</span>: [<span class="s">"gpt-4o-mini"</span>], <span class="s">"max_complexity"</span>: <span class="s">"SIMPLE"</span>},
+        <span class="s">"tier2"</span>: {<span class="s">"models"</span>: [<span class="s">"gpt-4o"</span>], <span class="s">"max_complexity"</span>: <span class="s">"MODERATE"</span>},
+        <span class="s">"tier3"</span>: {<span class="s">"models"</span>: [<span class="s">"gpt-4.5-preview"</span>], <span class="s">"max_complexity"</span>: <span class="s">"COMPLEX"</span>},
+    },
+    <span class="s">"compression"</span>: {
+        <span class="s">"enabled"</span>: <span class="k">True</span>,
+        <span class="s">"min_tokens"</span>: <span class="n">500</span>,
+        <span class="s">"skip_for"</span>: [<span class="s">"SECURITY_CRITICAL"</span>],
+    },
+    <span class="s">"quality_floor"</span>: <span class="n">0.95</span>,
+    <span class="s">"cost_tracking"</span>: <span class="k">True</span>,
+})</code></pre>
+
+            <h2>Complexity Levels</h2>
+            <p>InferShrink classifies every prompt into one of four complexity levels. These levels determine which model tier is selected.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Signals</th>
+                        <th>Default Routing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SIMPLE</td>
+                        <td>Short, no code, basic questions (&lt;500 tokens)</td>
+                        <td>Tier 1 (cheapest)</td>
+                    </tr>
+                    <tr>
+                        <td>MODERATE</td>
+                        <td>Some code, medium length, summarization</td>
+                        <td>Tier 2</td>
+                    </tr>
+                    <tr>
+                        <td>COMPLEX</td>
+                        <td>Heavy code, multi-step reasoning, long prompts</td>
+                        <td>Tier 3 (most capable)</td>
+                    </tr>
+                    <tr>
+                        <td>SECURITY_CRITICAL</td>
+                        <td>Passwords, API keys, financial data</td>
+                        <td>Never downgraded</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Same-Provider Routing</h2>
+            <p>By default, InferShrink only routes within the same provider to avoid data privacy issues or API key confusion. We never switch providers silently.</p>
+            <pre><code>gpt-4o         → gpt-4o-mini       ✅ (same provider)
+claude-opus    → claude-sonnet     ✅ (same provider)
+gpt-4o         → claude-sonnet     ✗ (never happens)</code></pre>
+
+            <h2>License Key</h2>
+            <p>For paid plans, configure your license key via environment variables or inline config.</p>
+            <pre><code><span class="c"># Via environment</span>
+<span class="c"># export INFERSHRINK_LICENSE_KEY=ls_live_xxxxx</span>
+
+<span class="c"># Or inline</span>
+client = optimize(openai.Client(), config={<span class="s">"license_key"</span>: <span class="s">"ls_live_xxxxx"</span>})</code></pre>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
