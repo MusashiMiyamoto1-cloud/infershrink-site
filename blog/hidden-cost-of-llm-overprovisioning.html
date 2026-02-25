@@ -118,7 +118,7 @@
             <li><strong>Full observability.</strong> Every routing decision is logged. You can audit, verify, and override. Trust but verify.</li>
         </ul>
 
-        <p>I built <a href="cut-llm-costs-80-percent.html">InferShrink</a> to do exactly this. Three lines of code, sub-millisecond overhead, and it wraps your existing OpenAI/Anthropic/Google client transparently. The <a href="cut-llm-costs-80-percent.html">technical deep dive</a> covers the implementation and real numbers.</p>
+        <p>I built <a href="../index.html">InferShrink</a> to do exactly this. Three lines of code, sub-millisecond overhead, and it wraps your existing OpenAI/Anthropic/Google client transparently. The <a href="../docs/index.html">documentation</a> covers the implementation and real numbers.</p>
 
         <h2>The Strategic Question</h2>
 
@@ -132,7 +132,7 @@
 
         <ol>
             <li><strong>Log your prompts.</strong> Just 1,000 of them. Classify them manually: simple, moderate, complex. The distribution will surprise you.</li>
-            <li><strong>A/B test cheap models on the simple ones.</strong> Run your most common prompt patterns through <a href="gemini-flash-vs-gpt4o.html">Gemini Flash or GPT-4o Mini</a>. Compare outputs side by side. For extraction and classification, you won't see a difference.</li>
+            <li><strong>A/B test cheap models on the simple ones.</strong> Run your most common prompt patterns through Gemini Flash or GPT-4o Mini. Compare outputs side by side. For extraction and classification, you won't see a difference.</li>
             <li><strong>Automate it.</strong> Once you've confirmed the savings are real, stop doing it manually. <code>pip install infershrink</code> and let the classifier handle per-request routing.</li>
         </ol>
 
