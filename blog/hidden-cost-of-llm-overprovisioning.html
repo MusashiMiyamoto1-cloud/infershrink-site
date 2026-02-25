@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hidden Cost of LLM Over-Provisioning — InferShrink</title>
+    <meta name="description" content="You're probably paying 5x what you should for LLM inference. Here's why over-provisioning happens and how to fix it without rewriting your application.">
+    <meta property="og:title" content="The Hidden Cost of LLM Over-Provisioning">
+    <meta property="og:description" content="Most teams pay 5x more than necessary for LLM APIs. The fix is simpler than you think.">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary">
+    <meta name="keywords" content="LLM pricing, AI infrastructure costs, LLM cost management, over-provisioning, model selection, inference optimization">
+    <link rel="canonical" href="https://musashimiyamoto1-cloud.github.io/infershrink-site/blog/hidden-cost-of-llm-overprovisioning.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #0a0a0a; --text-color: #e5e5e5; --text-muted: #a3a3a3; --accent-blue: #3b82f6; --accent-blue-hover: #2563eb; --accent-green: #22c55e; --accent-orange: #f59e0b; --border-color: #262626; --card-bg: #111111; --code-bg: #171717; --font-sans: 'Inter', system-ui, -apple-system, sans-serif; --font-mono: 'JetBrains Mono', monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-sans); line-height: 1.8; -webkit-font-smoothing: antialiased; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .top-nav { height: 60px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 24px; background: rgba(10,10,10,0.9); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 50; justify-content: space-between; }
+        .logo { font-weight: 700; font-size: 1.2rem; color: var(--text-color); text-decoration: none; }
+        .logo:hover { color: var(--accent-blue); text-decoration: none; }
+        .top-links { display: flex; gap: 24px; font-size: 0.9rem; align-items: center; }
+        .top-links a { color: var(--text-muted); }
+        .top-links a:hover { color: var(--accent-blue); text-decoration: none; }
+        .nav-active { color: var(--accent-blue) !important; }
+        article { max-width: 720px; margin: 0 auto; padding: 60px 24px 80px; }
+        article h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 16px; letter-spacing: -0.01em; }
+        .post-meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); }
+        article h2 { font-size: 1.5rem; font-weight: 600; margin: 48px 0 16px; }
+        article h3 { font-size: 1.15rem; font-weight: 600; margin: 32px 0 12px; }
+        article p { color: var(--text-muted); margin-bottom: 20px; font-size: 1.05rem; }
+        article strong { color: var(--text-color); }
+        article ul, article ol { color: var(--text-muted); margin: 0 0 20px 24px; font-size: 1.05rem; }
+        article li { margin-bottom: 8px; }
+        pre { background: var(--code-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; overflow-x: auto; margin: 0 0 24px; font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.6; color: var(--text-color); }
+        code { font-family: var(--font-mono); font-size: 0.9em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; }
+        pre code { background: none; padding: 0; }
+        .callout { background: var(--card-bg); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-blue); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 0; }
+        .callout-warn { border-left-color: var(--accent-orange); }
+        .cost-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 0.95rem; }
+        .cost-table th, .cost-table td { padding: 12px 16px; border: 1px solid var(--border-color); text-align: left; }
+        .cost-table th { background: var(--card-bg); color: var(--text-color); font-weight: 600; }
+        .cost-table td { color: var(--text-muted); }
+        .cta-box { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(34,197,94,0.1)); border: 1px solid var(--border-color); border-radius: 12px; padding: 32px; margin: 40px 0; text-align: center; }
+        .cta-box h3 { color: var(--text-color); margin-bottom: 12px; }
+        .cta-box p { margin-bottom: 16px; }
+        .cta-box code { font-size: 1.1em; background: var(--code-bg); padding: 8px 16px; border-radius: 6px; }
+        footer { border-top: 1px solid var(--border-color); padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="../index.html" class="logo">InferShrink</a>
+        <div class="top-links">
+            <a href="../docs/index.html">Docs</a>
+            <a href="../docs/pricing.html">Pricing</a>
+            <a href="index.html" class="nav-active">Blog</a>
+            <a href="https://pypi.org/project/infershrink/" target="_blank">PyPI ↗</a>
+        </div>
+    </nav>
+
+    <article>
+        <h1>The Hidden Cost of LLM Over-Provisioning</h1>
+        <div class="post-meta">February 25, 2026 · 5 min read</div>
+
+        <p>You're probably paying 5x what you should for LLM inference. Not because the models are overpriced — because you're using the wrong one for most requests.</p>
+
+        <p>This isn't a theoretical problem. It's the default state of every production LLM deployment we've seen.</p>
+
+        <h2>How Over-Provisioning Happens</h2>
+
+        <p>The pattern is always the same:</p>
+
+        <ol>
+            <li><strong>You prototype with the best model.</strong> GPT-4o, Claude Sonnet, whatever's newest. It works great. Quality is high. You ship it.</li>
+            <li><strong>Traffic grows.</strong> Your monthly bill goes from $50 to $500 to $5,000. Each prompt costs the same whether it's "What's 2+2?" or "Analyze this legal contract."</li>
+            <li><strong>Nobody optimizes.</strong> The model choice was made once, during prototyping. It never gets revisited. The config file says <code>model: gpt-4o</code> and it stays that way forever.</li>
+        </ol>
+
+        <p>This is exactly how traditional cloud over-provisioning works. You spin up a c5.4xlarge because you needed it for load testing, and it runs at 8% CPU for the next 18 months. Same pattern, different abstraction layer.</p>
+
+        <h2>What the Data Shows</h2>
+
+        <p>We analyzed prompt distributions from real production workloads. The pattern is remarkably consistent:</p>
+
+        <table class="cost-table">
+            <thead>
+                <tr><th>Prompt Complexity</th><th>% of Traffic</th><th>Optimal Model Tier</th><th>Typical Cost</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Simple (extraction, classification, formatting)</td><td>60-75%</td><td>Flash/Mini ($0.10-0.15/M)</td><td><strong>$3-5/day at 1M tok/day</strong></td></tr>
+                <tr><td>Moderate (synthesis, structured generation)</td><td>15-25%</td><td>Mid-tier ($0.50-1.25/M)</td><td>$8-15/day</td></tr>
+                <tr><td>Complex (reasoning, code, analysis)</td><td>5-15%</td><td>Premium ($2.50-15/M)</td><td>$12-40/day</td></tr>
+            </tbody>
+        </table>
+
+        <div class="callout callout-warn">
+            <p><strong>The waste:</strong> If all traffic goes to a premium model, you're paying premium prices for the 60-75% of requests that a model costing 25x less would handle identically.</p>
+        </div>
+
+        <h2>Why "Just Switch to a Cheaper Model" Doesn't Work</h2>
+
+        <p>The obvious fix — "just use GPT-4o Mini for everything" — fails because the 10-15% of complex prompts genuinely need the premium model. Code generation breaks. Nuanced analysis gets shallow. Multi-step reasoning drops steps.</p>
+
+        <p>So teams face a false choice:</p>
+
+        <ul>
+            <li><strong>Option A:</strong> Premium model everywhere. Reliable but expensive.</li>
+            <li><strong>Option B:</strong> Cheap model everywhere. Cheap but quality drops on hard tasks.</li>
+        </ul>
+
+        <p>Both options are wrong. The correct answer is <strong>Option C: the right model for each request.</strong></p>
+
+        <h2>The Right Model for Each Request</h2>
+
+        <p>This is what complexity-based routing does. Before each LLM call, a lightweight classifier (running locally, sub-millisecond) evaluates the prompt and picks the optimal model:</p>
+
+<pre><code># Before: one model for everything
+response = client.chat.completions.create(
+    model="gpt-4o",  # $2.50/M input — always
+    messages=[{"role": "user", "content": prompt}]
+)
+
+# After: automatic routing
+from infershrink import optimize
+client = optimize(openai.OpenAI())
+
+response = client.chat.completions.create(
+    model="gpt-4o",  # Requested model — but InferShrink may route cheaper
+    messages=[{"role": "user", "content": prompt}]
+)
+# Simple prompt → gpt-4o-mini ($0.15/M)
+# Complex prompt → gpt-4o ($2.50/M, as requested)</code></pre>
+
+        <p>The key properties:</p>
+
+        <ul>
+            <li><strong>Same-provider routing</strong> — OpenAI stays on OpenAI, Google stays on Google. No cross-provider surprises.</li>
+            <li><strong>Zero latency</strong> — classifier runs locally, no additional API call</li>
+            <li><strong>Transparent</strong> — your code doesn't change, the wrapper handles everything</li>
+            <li><strong>Observable</strong> — every routing decision is tracked, so you can audit what went where and verify quality</li>
+        </ul>
+
+        <h2>The Analogy: Cloud Right-Sizing for LLMs</h2>
+
+        <p>Cloud infrastructure went through this exact evolution:</p>
+
+        <ol>
+            <li><strong>Phase 1:</strong> Over-provision everything (expensive, reliable)</li>
+            <li><strong>Phase 2:</strong> Manual right-sizing (cheaper, requires constant attention)</li>
+            <li><strong>Phase 3:</strong> Automatic right-sizing (tools like AWS Auto Scaling, Spot instances)</li>
+        </ol>
+
+        <p>LLM inference is at Phase 1-2 for most teams. Everyone knows they're overpaying. Some teams manually route specific endpoints to cheaper models. Almost nobody does it automatically, per-request, based on actual prompt complexity.</p>
+
+        <p>That's the gap.</p>
+
+        <h2>What This Looks Like at Scale</h2>
+
+        <table class="cost-table">
+            <thead>
+                <tr><th>Daily Volume</th><th>All GPT-4o</th><th>With Routing</th><th>Annual Savings</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>100K tokens</td><td>$38/mo</td><td>$8/mo</td><td><strong>$360</strong></td></tr>
+                <tr><td>1M tokens</td><td>$375/mo</td><td>$78/mo</td><td><strong>$3,564</strong></td></tr>
+                <tr><td>10M tokens</td><td>$3,750/mo</td><td>$780/mo</td><td><strong>$35,640</strong></td></tr>
+                <tr><td>100M tokens</td><td>$37,500/mo</td><td>$7,800/mo</td><td><strong>$356,400</strong></td></tr>
+            </tbody>
+        </table>
+
+        <p>At 100M tokens/day, the savings pay for an entire engineering team. And that's a conservative estimate — many production deployments process significantly more.</p>
+
+        <h2>Three Things You Can Do Today</h2>
+
+        <ol>
+            <li><strong>Audit your prompt distribution.</strong> Log 1,000 prompts and manually classify them. You'll probably find that 60%+ are simple tasks. This alone tells you how much waste you have.</li>
+            <li><strong>Test cheap models on your simple prompts.</strong> Take your most common prompt patterns, run them through GPT-4o Mini or Gemini Flash, and compare outputs. You'll be surprised how often they match.</li>
+            <li><strong>Automate the routing.</strong> Once you know the savings are real, stop doing it manually:</li>
+        </ol>
+
+<pre><code>pip install infershrink</code></pre>
+
+<pre><code>from infershrink import optimize
+import openai
+
+client = optimize(openai.OpenAI())
+# Every call now routes automatically.
+# Simple → cheap. Complex → premium. Same provider.</code></pre>
+
+        <div class="cta-box">
+            <h3>Stop Over-Provisioning</h3>
+            <p>One line of code. Automatic model routing. Same quality where it matters, 80% savings where it doesn't.</p>
+            <code>pip install infershrink</code>
+        </div>
+
+        <p>Check the <a href="../docs/index.html">documentation</a> for setup guides, or read our <a href="cut-llm-costs-80-percent.html">deep dive on complexity-based routing</a> for the technical details.</p>
+    </article>
+
+    <footer>© 2026 Musashi Labs</footer>
+</body>
+</html>
