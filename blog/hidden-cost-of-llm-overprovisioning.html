@@ -70,7 +70,7 @@
 
         <p>You're probably paying 5x what you should for LLM inference. Not because the models are overpriced — because you're using the wrong one for most requests.</p>
 
-        <p>This isn't a theoretical problem. It's the default state of every production LLM deployment we've seen.</p>
+        <p>This is the default state of most production LLM deployments.</p>
 
         <h2>How Over-Provisioning Happens</h2>
 
@@ -84,9 +84,21 @@
 
         <p>This is exactly how traditional cloud over-provisioning works. You spin up a c5.4xlarge because you needed it for load testing, and it runs at 8% CPU for the next 18 months. Same pattern, different abstraction layer.</p>
 
+        <h2>The Cloud Right-Sizing Playbook</h2>
+
+        <p>Cloud infrastructure already solved this problem:</p>
+
+        <ol>
+            <li><strong>Phase 1:</strong> Over-provision everything (expensive, reliable)</li>
+            <li><strong>Phase 2:</strong> Manual right-sizing (cheaper, requires constant attention)</li>
+            <li><strong>Phase 3:</strong> Automatic right-sizing (tools like AWS Auto Scaling, Spot instances)</li>
+        </ol>
+
+        <p>LLM inference is at Phase 1-2 for most teams. Everyone knows they're overpaying. Some teams manually route specific endpoints to cheaper models. Almost nobody does it automatically, per-request, based on actual prompt complexity.</p>
+
         <h2>What the Data Shows</h2>
 
-        <p>We analyzed prompt distributions from real production workloads. The pattern is remarkably consistent:</p>
+        <p>I analyzed prompt distributions from a production chatbot over two weeks. The pattern is consistent:</p>
 
         <table class="cost-table">
             <thead>
@@ -145,20 +157,6 @@ response = client.chat.completions.create(
             <li><strong>Transparent</strong> — your code doesn't change, the wrapper handles everything</li>
             <li><strong>Observable</strong> — every routing decision is tracked, so you can audit what went where and verify quality</li>
         </ul>
-
-        <h2>The Analogy: Cloud Right-Sizing for LLMs</h2>
-
-        <p>Cloud infrastructure went through this exact evolution:</p>
-
-        <ol>
-            <li><strong>Phase 1:</strong> Over-provision everything (expensive, reliable)</li>
-            <li><strong>Phase 2:</strong> Manual right-sizing (cheaper, requires constant attention)</li>
-            <li><strong>Phase 3:</strong> Automatic right-sizing (tools like AWS Auto Scaling, Spot instances)</li>
-        </ol>
-
-        <p>LLM inference is at Phase 1-2 for most teams. Everyone knows they're overpaying. Some teams manually route specific endpoints to cheaper models. Almost nobody does it automatically, per-request, based on actual prompt complexity.</p>
-
-        <p>That's the gap.</p>
 
         <h2>What This Looks Like at Scale</h2>
 

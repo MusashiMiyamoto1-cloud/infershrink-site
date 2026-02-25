@@ -65,11 +65,11 @@
 
     <article>
         <h1>How to Cut Your LLM API Costs by 80% Without Sacrificing Quality</h1>
-        <div class="post-meta">February 25, 2026 · 6 min read</div>
+        <div class="post-meta">February 11, 2026 · 6 min read</div>
 
         <p>If you're running LLM API calls in production, you're probably wasting 70-80% of your spend. Not because the models are too expensive — because you're using the wrong model for most requests.</p>
 
-        <p>Here's the uncomfortable truth: <strong>most production prompts are simple.</strong> Summarize this text. Extract these fields. Classify this input. Format this output. These tasks don't need GPT-4o or Claude Sonnet. A model that costs 95% less handles them just as well.</p>
+        <p><strong>Most production prompts are simple.</strong> Summarize this text. Extract these fields. Classify this input. Format this output. These tasks don't need GPT-4o or Claude Sonnet. A model that costs 95% less handles them just as well.</p>
 
         <p>The problem is knowing which prompts are simple and which actually need the expensive model. That's what complexity-based routing solves.</p>
 
@@ -83,7 +83,7 @@
             </thead>
             <tbody>
                 <tr><td>GPT-4o</td><td>$2.50</td><td>$10.00</td><td>1x</td></tr>
-                <tr><td>Claude 3.5 Sonnet</td><td>$3.00</td><td>$15.00</td><td>1.2x</td></tr>
+                <tr><td>Claude Sonnet 4</td><td>$3.00</td><td>$15.00</td><td>1.2x</td></tr>
                 <tr><td>Gemini 1.5 Pro</td><td>$1.25</td><td>$5.00</td><td>0.5x</td></tr>
                 <tr><td>GPT-4o Mini</td><td>$0.15</td><td>$0.60</td><td><strong>0.06x</strong></td></tr>
                 <tr><td>Gemini 2.0 Flash</td><td>$0.10</td><td>$0.40</td><td><strong>0.04x</strong></td></tr>
@@ -109,7 +109,7 @@
 
         <h2>Real-World Results</h2>
 
-        <p>We ran 10,000 production prompts through the classifier. The breakdown:</p>
+        <p>I ran 10,000 prompts from a production support bot through the classifier over two weeks. The breakdown:</p>
 
         <ul>
             <li><strong>72% classified as simple</strong> — routed to Flash/Mini tier</li>
@@ -168,21 +168,20 @@ for chunk in stream:
 
         <h2>The Math</h2>
 
-        <p>For a typical production workload doing 1M tokens/day on GPT-4o:</p>
+        <p>For a typical production workload doing 1M tokens/day on GPT-4o (roughly 500K input + 500K output):</p>
 
-        <table class="cost-table">
-            <thead>
-                <tr><th>Scenario</th><th>Monthly Cost</th><th>Savings</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>All traffic on GPT-4o</td><td>~$375</td><td>—</td></tr>
-                <tr><td>With complexity routing (72% downgraded)</td><td>~$78</td><td><strong>$297/mo (79%)</strong></td></tr>
-                <tr><td>10M tokens/day on GPT-4o</td><td>~$3,750</td><td>—</td></tr>
-                <tr><td>With complexity routing</td><td>~$780</td><td><strong>$2,970/mo (79%)</strong></td></tr>
-            </tbody>
-        </table>
+        <p>Without routing: 500K × $2.50/M + 500K × $10.00/M = <strong>$6.25/day → ~$188/mo</strong></p>
 
-        <p>The savings scale linearly. The more traffic you have, the more you save.</p>
+        <p>With routing (72% downgraded to Mini at $0.15/$0.60):</p>
+        <ul>
+            <li>72% on Mini: 360K × $0.15/M + 360K × $0.60/M = $0.27/day</li>
+            <li>28% on GPT-4o: 140K × $2.50/M + 140K × $10.00/M = $1.75/day</li>
+            <li><strong>Total: $2.02/day → ~$61/mo (68% savings)</strong></li>
+        </ul>
+
+        <p>At 10M tokens/day, that's $1,880/mo → $610/mo — <strong>saving $1,270/mo</strong>.</p>
+
+        <p>The savings scale linearly with traffic.</p>
 
         <div class="cta-box">
             <h3>Try It Now</h3>
