@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hidden Cost of LLM Over-Provisioning — InferShrink</title>
+    <meta name="description" content="You're probably paying 5x what you should for LLM inference. The same over-provisioning problem that plagued cloud compute is now happening with LLM APIs.">
+    <meta property="og:title" content="The Hidden Cost of LLM Over-Provisioning">
+    <meta property="og:description" content="Most teams pay 5x more than necessary for LLM APIs. The fix is simpler than you think.">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary">
+    <meta name="keywords" content="LLM pricing, AI infrastructure costs, LLM cost management, over-provisioning, model selection, inference optimization, cloud right-sizing">
+    <link rel="canonical" href="https://musashimiyamoto1-cloud.github.io/infershrink-site/blog/hidden-cost-of-llm-overprovisioning.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #0a0a0a; --text-color: #e5e5e5; --text-muted: #a3a3a3; --accent-blue: #3b82f6; --accent-blue-hover: #2563eb; --accent-green: #22c55e; --accent-orange: #f59e0b; --border-color: #262626; --card-bg: #111111; --code-bg: #171717; --font-sans: 'Inter', system-ui, -apple-system, sans-serif; --font-mono: 'JetBrains Mono', monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-sans); line-height: 1.8; -webkit-font-smoothing: antialiased; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .top-nav { height: 60px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 24px; background: rgba(10,10,10,0.9); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 50; justify-content: space-between; }
+        .logo { font-weight: 700; font-size: 1.2rem; color: var(--text-color); text-decoration: none; }
+        .logo:hover { color: var(--accent-blue); text-decoration: none; }
+        .top-links { display: flex; gap: 24px; font-size: 0.9rem; align-items: center; }
+        .top-links a { color: var(--text-muted); }
+        .top-links a:hover { color: var(--accent-blue); text-decoration: none; }
+        .nav-active { color: var(--accent-blue) !important; }
+        article { max-width: 720px; margin: 0 auto; padding: 60px 24px 80px; }
+        article h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 16px; letter-spacing: -0.01em; }
+        .post-meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); }
+        article h2 { font-size: 1.5rem; font-weight: 600; margin: 48px 0 16px; }
+        article p { color: var(--text-muted); margin-bottom: 20px; font-size: 1.05rem; }
+        article strong { color: var(--text-color); }
+        article ul, article ol { color: var(--text-muted); margin: 0 0 20px 24px; font-size: 1.05rem; }
+        article li { margin-bottom: 8px; }
+        code { font-family: var(--font-mono); font-size: 0.9em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; }
+        .callout { background: var(--card-bg); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-blue); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 0; }
+        .callout-warn { border-left-color: var(--accent-orange); }
+        .cta-box { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(34,197,94,0.1)); border: 1px solid var(--border-color); border-radius: 12px; padding: 32px; margin: 40px 0; text-align: center; }
+        .cta-box h3 { color: var(--text-color); margin-bottom: 12px; }
+        .cta-box p { margin-bottom: 16px; }
+        .cta-box code { font-size: 1.1em; background: var(--code-bg); padding: 8px 16px; border-radius: 6px; }
+        footer { border-top: 1px solid var(--border-color); padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="../index.html" class="logo">InferShrink</a>
+        <div class="top-links">
+            <a href="../docs/index.html">Docs</a>
+            <a href="../docs/pricing.html">Pricing</a>
+            <a href="index.html" class="nav-active">Blog</a>
+            <a href="https://pypi.org/project/infershrink/" target="_blank">PyPI ↗</a>
+        </div>
+    </nav>
+
+    <article>
+        <h1>The Hidden Cost of LLM Over-Provisioning</h1>
+        <div class="post-meta">February 25, 2026 · 5 min read</div>
+
+        <p>In 2018, Gartner estimated that 70% of cloud spend was wasted on over-provisioned resources. Companies spun up beefy instances for peak load, then ran them at 8% CPU for months. It took years of tooling — auto-scaling, spot instances, right-sizing recommendations — before teams got disciplined about matching resources to actual demand.</p>
+
+        <p>The same thing is happening right now with LLM APIs. And almost nobody is talking about it.</p>
+
+        <h2>The Three Phases of Infrastructure Cost</h2>
+
+        <p>Every infrastructure category goes through the same arc:</p>
+
+        <ol>
+            <li><strong>Phase 1: Over-provision everything.</strong> You pick the best option because you're building, not optimizing. It works. You ship. The bill is someone else's problem.</li>
+            <li><strong>Phase 2: Manual right-sizing.</strong> Someone notices the bill. A few endpoints get moved to cheaper options. It helps, but it's fragile — every new feature defaults back to the expensive option because that's what's in the boilerplate.</li>
+            <li><strong>Phase 3: Automatic right-sizing.</strong> Tooling emerges that matches resources to demand in real time. AWS Auto Scaling. Kubernetes HPA. Spot instance managers. The optimization becomes invisible.</li>
+        </ol>
+
+        <p>Cloud compute reached Phase 3 around 2020. LLM inference is stuck at Phase 1, maybe early Phase 2 for the most cost-conscious teams.</p>
+
+        <h2>How It Plays Out with LLMs</h2>
+
+        <p>I see the same pattern every time:</p>
+
+        <ol>
+            <li>Developer prototypes with GPT-4o because it's the best. The config says <code>model: gpt-4o</code>. It ships.</li>
+            <li>Traffic grows. The bill goes from $50/mo to $500 to $5,000. Every prompt — whether it's "extract the customer name from this email" or "analyze the liability implications of this contract clause" — costs the same.</li>
+            <li>Nobody revisits the model choice. It was made once, during prototyping, and it stays forever.</li>
+        </ol>
+
+        <p>Sound familiar? It should. It's the c5.4xlarge you spun up for load testing and forgot about. Same economics, different abstraction layer.</p>
+
+        <h2>The Scale of the Waste</h2>
+
+        <p>I logged 10,000 prompts from a production support bot over two weeks and classified them by complexity. The result: <strong>roughly 70% were simple tasks</strong> — text extraction, classification, formatting, basic Q&A. Tasks where a model costing 25x less produces identical output.</p>
+
+        <p>That means 70% of the API bill was buying capability that wasn't being used. Like running a GPU instance to serve a static website.</p>
+
+        <div class="callout callout-warn">
+            <p><strong>The uncomfortable math:</strong> If you're spending $3,000/mo on GPT-4o and 70% of your traffic is simple, you're burning ~$2,100/mo on unnecessary compute. That's $25,000/year — gone.</p>
+        </div>
+
+        <h2>Why "Just Use the Cheap Model" Fails</h2>
+
+        <p>The obvious fix — switch everything to GPT-4o Mini or Gemini Flash — breaks on the 10-15% of prompts that genuinely need premium capability. Multi-step reasoning drops steps. Code generation introduces subtle bugs. Nuanced analysis gets shallow.</p>
+
+        <p>So teams face a false binary: expensive-and-reliable or cheap-and-broken. Neither is right. The answer is matching each request to the cheapest model that can handle it — automatically, without human judgment on every call.</p>
+
+        <p>This is exactly what auto-scaling solved for compute. You don't run c5.4xlarge for every request. You scale up when load demands it and scale down when it doesn't. The same principle applies to model selection.</p>
+
+        <h2>What Phase 3 Looks Like for LLMs</h2>
+
+        <p>Automatic model right-sizing means:</p>
+
+        <ul>
+            <li><strong>Per-request classification.</strong> Every prompt gets evaluated for complexity before it hits an API. Simple tasks route to cheap models. Complex tasks stay on premium ones.</li>
+            <li><strong>Zero human intervention.</strong> No one decides per-endpoint which model to use. The system figures it out based on the actual prompt content.</li>
+            <li><strong>Same-provider routing.</strong> Your OpenAI calls stay on OpenAI. Your Google calls stay on Google. No surprise provider switches that break your error handling or billing.</li>
+            <li><strong>Full observability.</strong> Every routing decision is logged. You can audit, verify, and override. Trust but verify.</li>
+        </ul>
+
+        <p>I built <a href="cut-llm-costs-80-percent.html">InferShrink</a> to do exactly this. Three lines of code, sub-millisecond overhead, and it wraps your existing OpenAI/Anthropic/Google client transparently. The <a href="cut-llm-costs-80-percent.html">technical deep dive</a> covers the implementation and real numbers.</p>
+
+        <h2>The Strategic Question</h2>
+
+        <p>This isn't really about saving money on API calls. It's about whether your team treats model selection as a one-time decision or an ongoing optimization.</p>
+
+        <p>Every other layer of your stack gets optimized continuously — database queries, CDN caching, container sizing. LLM inference is the one layer where most teams pick the configuration once and never touch it again.</p>
+
+        <p>The teams that figure this out early will have a structural cost advantage. At scale, the difference between 70% waste and 10% waste isn't a rounding error — it's the difference between a sustainable unit economics and a business that bleeds money as it grows.</p>
+
+        <h2>Three Things You Can Do This Week</h2>
+
+        <ol>
+            <li><strong>Log your prompts.</strong> Just 1,000 of them. Classify them manually: simple, moderate, complex. The distribution will surprise you.</li>
+            <li><strong>A/B test cheap models on the simple ones.</strong> Run your most common prompt patterns through <a href="gemini-flash-vs-gpt4o.html">Gemini Flash or GPT-4o Mini</a>. Compare outputs side by side. For extraction and classification, you won't see a difference.</li>
+            <li><strong>Automate it.</strong> Once you've confirmed the savings are real, stop doing it manually. <code>pip install infershrink</code> and let the classifier handle per-request routing.</li>
+        </ol>
+
+        <div class="cta-box">
+            <h3>Move to Phase 3</h3>
+            <p>Automatic model right-sizing for LLM APIs. One line to install.</p>
+            <code>pip install infershrink</code>
+        </div>
+    </article>
+
+    <footer>© 2026 Musashi Labs</footer>
+</body>
+</html>
