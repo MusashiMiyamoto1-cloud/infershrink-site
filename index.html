@@ -720,12 +720,10 @@ response = client.chat.completions.create(
             
             // Show selected content
             document.getElementById(tabName + '-code').classList.add('active');
-            // Add active class to selected tab (find based on text content roughly or index)
-            if(tabName === 'openai') {
-                document.querySelectorAll('.code-tab')[0].classList.add('active');
-            } else {
-                document.querySelectorAll('.code-tab')[1].classList.add('active');
-            }
+            // Add active class to selected tab
+            const tabs = document.querySelectorAll('.code-tab');
+            const tabIndex = tabName === 'openai' ? 0 : tabName === 'anthropic' ? 1 : 2;
+            tabs[tabIndex].classList.add('active');
         }
     </script>
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "62c18174666b4a4daf415e87f6eda8ec"}'></script>
