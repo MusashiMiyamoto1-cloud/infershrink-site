@@ -315,6 +315,10 @@
             border-bottom: none;
         }
 
+        .cta-btn { display: inline-block; padding: 10px 20px; background: var(--accent-blue); color: #fff; border-radius: 8px; font-weight: 600; font-size: 0.95rem; transition: background 0.2s; }
+        .cta-btn:hover { background: var(--accent-blue-hover); color: #fff; }
+        .pricing-cta-row td { padding-top: 20px; border-bottom: none; }
+        .pricing-cta-row td code { font-size: 0.8rem; color: var(--text-muted); }
         .pricing-header-row th {
             color: var(--text-color);
             font-size: 1.1rem;
@@ -630,6 +634,13 @@ response = client.chat.completions.create(
                             <td>—</td>
                             <td>✅</td>
                             <td>✅</td>
+                        </tr>
+                        <tr class="pricing-cta-row">
+                            <th></th>
+                            <td><code>pip install infershrink</code></td>
+                            <td><code>pip install infershrink</code></td>
+                            <td><a href="https://musashi-labs.lemonsqueezy.com/checkout/buy/527b45b9-f25e-4624-b217-4609046eacdb" target="_blank" class="cta-btn">Subscribe →</a></td>
+                            <td><a href="https://musashi-labs.lemonsqueezy.com/checkout/buy/1bf647b0-04da-4b0d-bb99-7e027eff3d2c" target="_blank" class="cta-btn">Subscribe →</a></td>
                         </tr>
                     </tbody>
                 </table>
