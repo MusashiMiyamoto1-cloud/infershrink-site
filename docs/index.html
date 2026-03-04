@@ -120,7 +120,12 @@ pip install infershrink[retrieval]    <span class="c"># + FAISS retrieval</span>
 pip install infershrink[compression]  <span class="c"># + LLMLingua</span>
 pip install infershrink[all]          <span class="c"># Everything</span></code></pre>
 
-            <h2>Step 1: Wrap your client</h2>
+            <h2>Step 1: Set your license key</h2>
+            <p>All plans include a <strong>14-day free trial</strong>. <a href="pricing.html" style="color: var(--accent-blue);">Get your key →</a></p>
+            <pre><code><span class="c"># Set via environment variable</span>
+export INFERSHRINK_LICENSE_KEY=<span class="s">"ls_live_your_key_here"</span></code></pre>
+
+            <h2>Step 2: Wrap your client</h2>
             <p>Import <code>optimize</code> and wrap your existing client instance. This works for both OpenAI and Anthropic clients.</p>
             <pre><code><span class="k">import</span> openai
 <span class="k">from</span> infershrink <span class="k">import</span> optimize
